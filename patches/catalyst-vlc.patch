@@ -1,0 +1,348 @@
+diff --git a/configure.ac b/configure.ac
+index 3349a2f..2b61b6e 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -126,6 +126,7 @@ dnl
+ dnl  Check the operating system
+ dnl
+ HAVE_WIN64="0"
++HAVE_MACCATALYST="0"
+ HAVE_IOS="0"
+ HAVE_OSX="0"
+ HAVE_TVOS="0"
+@@ -235,6 +236,12 @@ int foo() { return my_array[0]; }
+        ],[AC_MSG_RESULT([no])])
+     VLC_RESTORE_FLAGS
+ 
++    AC_EGREP_CPP(yes,
++            [#import <TargetConditionals.h>
++             #if TARGET_OS_MACCATALYST
++             yes
++             #endif],
++             [HAVE_MACCATALYST="1"], [])
+     AC_EGREP_CPP(yes,
+             [#import <TargetConditionals.h>
+              #if TARGET_OS_IPHONE
+@@ -3543,7 +3550,7 @@ AS_IF([test "${HAVE_OSX}" = "1"], [
+   GL_LIBS="-Wl,-framework,OpenGL"
+   GL_CFLAGS="-DGL_SILENCE_DEPRECATION"
+ ])
+-AS_IF([test "${HAVE_IOS_OR_TVOS}" = "1"], [
++AS_IF([test "${HAVE_IOS_OR_TVOS}" = "1" -a "${HAVE_MACCATALYST}" != "1"], [
+   have_gles2="yes"
+   GLES2_LIBS="-Wl,-framework,OpenGLES"
+   GLES2_CFLAGS="-DGL_SILENCE_DEPRECATION"
+diff --git a/contrib/bootstrap b/contrib/bootstrap
+index a59b03f..aeacb2e 100755
+--- a/contrib/bootstrap
++++ b/contrib/bootstrap
+@@ -307,6 +307,10 @@ case "${OS}" in
+ 		then
+ 			add_make_enabled "HAVE_BITCODE_ENABLED"
+ 		fi
++		if test "$BUILDFORMACCATALYST"
++		then
++			add_make_enabled "HAVE_MACCATALYST"
++		fi
+ 		if test "$BUILDFORSIMULATOR"
+ 		then
+ 			add_make_enabled "HAVE_SIMULATOR"
+diff --git a/contrib/src/gen-cmake-toolchain.py b/contrib/src/gen-cmake-toolchain.py
+index cb329cd..aad3a93 100755
+--- a/contrib/src/gen-cmake-toolchain.py
++++ b/contrib/src/gen-cmake-toolchain.py
+@@ -50,6 +50,7 @@ _add_environ_cached_val_not_empty('CMAKE_OSX_DEPLOYMENT_TARGET', 'OSX_DEPLOYMENT
+ 
+ _add_environ_val('CMAKE_C_COMPILER', 'CC')
+ _add_environ_val('CMAKE_CXX_COMPILER', 'CXX')
++_add_environ_cached_val_not_empty('CMAKE_ASM_FLAGS', 'ASM_FLAGS')
+ 
+ _add_environ_val('ANDROID_NDK', 'ANDROID_NDK')
+ _add_environ_val('ANDROID_ABI', 'ANDROID_ABI')
+diff --git a/contrib/src/get-rust-target.sh b/contrib/src/get-rust-target.sh
+index ead81aa..bf8c813 100755
+--- a/contrib/src/get-rust-target.sh
++++ b/contrib/src/get-rust-target.sh
+@@ -36,6 +36,9 @@ validate_darwin()
+     macos)
+       DARWIN=macos
+       ;;
++    maccatalyst)
++      DARWIN=maccatalyst
++      ;;
+     ios)
+       DARWIN=ios
+       ;;
+@@ -147,6 +150,12 @@ case $OS in
+         esac
+         ;;
+ 
++      maccatalyst)
++        case $ARCH in
++          aarch64|arm64) return_triplet aarch64-apple-ios-macabi ;;
++          x86_64) return_triplet x86_64-apple-ios-macabi ;;
++        esac
++        ;;
+       ios)
+         if test -n "$SIMULATOR"; then
+           case $ARCH in
+diff --git a/contrib/src/main-rust.mak b/contrib/src/main-rust.mak
+index e29d882..5a9485c 100644
+--- a/contrib/src/main-rust.mak
++++ b/contrib/src/main-rust.mak
+@@ -21,7 +21,9 @@ RUST_TARGET_FLAGS += --llvm
+ endif
+ 
+ ifdef HAVE_DARWIN_OS
+-ifdef HAVE_TVOS
++ifdef HAVE_MACCATALYST
++RUST_TARGET_FLAGS += --darwin=maccatalyst
++else ifdef HAVE_TVOS
+ RUST_TARGET_FLAGS += --darwin=tvos
+ else ifdef HAVE_WATCHOS
+ RUST_TARGET_FLAGS += --darwin=watchos
+diff --git a/contrib/src/main.mak b/contrib/src/main.mak
+index 1fcd41d..938b2d5 100644
+--- a/contrib/src/main.mak
++++ b/contrib/src/main.mak
+@@ -846,6 +846,11 @@ endif
+ endif
+ endif
+ endif
++ifdef HAVE_MACCATALYST
++# Genuine macabi target is carried in C/CXXFLAGS; CMake's iOS platform
++# unconditionally injects iphoneos flags, which are invalid for Catalyst.
++CMAKE_SYSTEM_NAME = Darwin
++endif
+ ifdef HAVE_EMSCRIPTEN
+ CMAKE_SYSTEM_NAME = Emscripten
+ EMCMAKE_PATH := $(shell command -v emcmake)
+@@ -858,6 +863,10 @@ endif
+ 
+ # CMake toolchain
+ CMAKE_TOOLCHAIN_ENV := $(HOSTTOOLS) HOST_ARCH="$(CMAKE_HOST_ARCH)" SYSTEM_NAME="$(CMAKE_SYSTEM_NAME)"
++ifdef HAVE_MACCATALYST
++# Assembly must use the same genuine macabi target as C/C++.
++CMAKE_TOOLCHAIN_ENV += ASM_FLAGS="$(CFLAGS)"
++endif
+ ifdef HAVE_WIN32
+ ifdef HAVE_CROSS_COMPILE
+ 	CMAKE_TOOLCHAIN_ENV += RC_COMPILER="$(WINDRES)"
+@@ -873,9 +882,11 @@ else
+ 	CMAKE_TOOLCHAIN_ENV += OSX_ARCHITECTURES="$(ARCH)"
+ endif
+ endif
++ifndef HAVE_MACCATALYST
+ ifdef VLC_DEPLOYMENT_TARGET
+ 	CMAKE_TOOLCHAIN_ENV += OSX_DEPLOYMENT_TARGET="$(VLC_DEPLOYMENT_TARGET)"
+ endif
++endif
+ ifdef HAVE_IOS
+ 	CMAKE_TOOLCHAIN_ENV += OSX_SYSROOT="$(IOS_SDK)"
+ else
+diff --git a/extras/package/apple/build.conf b/extras/package/apple/build.conf
+index 8e53914..888233a 100644
+--- a/extras/package/apple/build.conf
++++ b/extras/package/apple/build.conf
+@@ -14,10 +14,10 @@
+ export VLC_DEPLOYMENT_TARGET_MACOSX="10.13"
+ # iOS deployment target
+ export VLC_DEPLOYMENT_TARGET_IOS="9.0"
+-export VLC_DEPLOYMENT_TARGET_IOS_SIMULATOR="12.0"
++export VLC_DEPLOYMENT_TARGET_IOS_SIMULATOR="16.0"
+ # tvOS deployment target
+ export VLC_DEPLOYMENT_TARGET_TVOS="11.0"
+-export VLC_DEPLOYMENT_TARGET_TVOS_SIMULATOR="12.0"
++export VLC_DEPLOYMENT_TARGET_TVOS_SIMULATOR="16.0"
+ # xrOS deployment target
+ export VLC_DEPLOYMENT_TARGET_XROS="1.0"
+ # watchOS deployment target
+diff --git a/extras/package/apple/build.sh b/extras/package/apple/build.sh
+index 90e5893..dbd8073 100755
+--- a/extras/package/apple/build.sh
++++ b/extras/package/apple/build.sh
+@@ -206,6 +206,11 @@ validate_build_conf()
+ set_deployment_target()
+ {
+     VLC_DEPLOYMENT_TARGET="$1"
++    if [ "$VLC_HOST_PLATFORM_CATALYST" = "yes" ]; then
++        VLC_DEPLOYMENT_TARGET_CFLAG="-target ${VLC_HOST_ARCH}-apple-ios${VLC_DEPLOYMENT_TARGET}-macabi -iframework $VLC_APPLE_SDK_PATH/System/iOSSupport/System/Library/Frameworks -isystem $VLC_APPLE_SDK_PATH/System/iOSSupport/usr/include"
++        VLC_DEPLOYMENT_TARGET_LDFLAG=""
++        return
++    fi
+     VLC_DEPLOYMENT_TARGET_CFLAG="-m$VLC_HOST_OS"
+ 
+     if [ -n "$VLC_HOST_PLATFORM_SIMULATOR" ]; then
+@@ -295,18 +300,26 @@ set_build_triplet()
+ #   SDK name
+ validate_sdk_name()
+ {
+-    xcrun --sdk "$1" --show-sdk-path >/dev/null 2>&1 || {
++    local actual_sdk="$1"
++    case "$1" in maccatalyst*) actual_sdk=macosx;; esac
++    xcrun --sdk "$actual_sdk" --show-sdk-path >/dev/null 2>&1 || {
+         abort_err "Failed to find SDK '$1'"
+     }
+ 
+-    VLC_APPLE_SDK_PATH="$(xcrun --sdk "$1" --show-sdk-path)"
+-    VLC_APPLE_SDK_VERSION="$(xcrun --sdk "$1" --show-sdk-version)"
++    VLC_APPLE_SDK_PATH="$(xcrun --sdk "$actual_sdk" --show-sdk-path)"
++    VLC_APPLE_SDK_VERSION="$(xcrun --sdk "$actual_sdk" --show-sdk-version)"
+     VLC_APPLE_XCODE_VERSION="$(xcodebuild -version)"
+     if [ ! -d "$VLC_APPLE_SDK_PATH" ]; then
+         abort_err "SDK at '$VLC_APPLE_SDK_PATH' does not exist"
+     fi
+ 
+     case "$1" in
++        maccatalyst*)
++            VLC_HOST_PLATFORM="MacCatalyst"
++            VLC_HOST_PLATFORM_CATALYST="yes"
++            VLC_HOST_OS="ios"
++            set_deployment_target "16.0"
++            ;;
+         iphoneos*)
+             VLC_HOST_PLATFORM="iOS"
+             VLC_HOST_OS="ios"
+@@ -381,6 +394,9 @@ set_host_envvars()
+     fi
+ 
+     export CPPFLAGS="-arch $VLC_HOST_ARCH -isysroot $VLC_APPLE_SDK_PATH"
++    if [ "$VLC_HOST_PLATFORM_CATALYST" = "yes" ]; then
++        export CPPFLAGS="$VLC_DEPLOYMENT_TARGET_CFLAG $CPPFLAGS"
++    fi
+ 
+     export CFLAGS="$clike_flags"
+     export CXXFLAGS="$clike_flags"
+@@ -425,6 +441,9 @@ write_config_mak()
+     local clike_flags="\$(VLC_DEPLOYMENT_TARGET_CFLAG) -arch $VLC_HOST_ARCH -isysroot $VLC_APPLE_SDK_PATH $1"
+ 
+     local vlc_cppflags="-arch $VLC_HOST_ARCH -isysroot $VLC_APPLE_SDK_PATH"
++    if [ "$VLC_HOST_PLATFORM_CATALYST" = "yes" ]; then
++        vlc_cppflags="\$(VLC_DEPLOYMENT_TARGET_CFLAG) $vlc_cppflags"
++    fi
+     local vlc_cflags="$clike_flags"
+     local vlc_cxxflags="$clike_flags"
+     local vlc_objcflags="$clike_flags"
+@@ -653,6 +672,9 @@ fi
+ if [ "$VLC_HOST_PLATFORM_SIMULATOR" = "yes" ]; then
+     export BUILDFORSIMULATOR="yes"
+ fi
++if [ "$VLC_HOST_PLATFORM_CATALYST" = "yes" ]; then
++    export BUILDFORMACCATALYST="yes"
++fi
+ 
+ # Default to "make" if there is no MAKE env variable
+ MAKE=${MAKE:-make}
+diff --git a/modules/codec/videotoolbox/decoder.c b/modules/codec/videotoolbox/decoder.c
+index d09ada7..d2f9c58 100644
+--- a/modules/codec/videotoolbox/decoder.c
++++ b/modules/codec/videotoolbox/decoder.c
+@@ -1175,7 +1175,7 @@ static int StartVideoToolbox(decoder_t *p_dec)
+    CFDictionarySetValue(destinationPixelBufferAttributes,
+                         kCVPixelBufferIOSurfaceOpenGLTextureCompatibilityKey,
+                         kCFBooleanTrue);
+-#elif !defined(TARGET_OS_VISION) || !TARGET_OS_VISION
++#elif !TARGET_OS_MACCATALYST && (!defined(TARGET_OS_VISION) || !TARGET_OS_VISION)
+     CFDictionarySetValue(destinationPixelBufferAttributes,
+                          kCVPixelBufferOpenGLESCompatibilityKey,
+                          kCFBooleanTrue);
+diff --git a/modules/video_filter/ci_filters.m b/modules/video_filter/ci_filters.m
+index 5de0c70..35e404f 100644
+--- a/modules/video_filter/ci_filters.m
++++ b/modules/video_filter/ci_filters.m
+@@ -86,7 +86,7 @@
+     filter_t *                  dst_converter;
+ #if !TARGET_OS_IPHONE
+     CGLContextObj               cgl_context;
+-#else
++#elif !TARGET_OS_MACCATALYST
+     CVEAGLContext               eagl_context;
+ #endif
+ };
+@@ -675,7 +675,13 @@ static void filter_PsychedelicControl(filter_t *filter, struct filter_chain *fch
+             ctx->cvpx_pool_fmt.i_chroma = VLC_CODEC_CVPX_BGRA;
+         }
+ 
+-#if !TARGET_OS_IPHONE
++#if TARGET_OS_MACCATALYST
++        /* Catalyst has no EAGL. Let Core Image select its supported renderer. */
++        ctx->ci_ctx = [CIContext contextWithOptions: @{
++            kCIContextWorkingColorSpace : [NSNull null],
++            kCIContextOutputColorSpace : [NSNull null],
++        }];
++#elif !TARGET_OS_IPHONE
+         CGLPixelFormatAttribute pixel_attr[] = {
+             kCGLPFAAccelerated,
+             kCGLPFAAllowOfflineRenderers,
+@@ -722,7 +728,7 @@ static void filter_PsychedelicControl(filter_t *filter, struct filter_chain *fch
+ #if !TARGET_OS_IPHONE
+     if (ctx->cgl_context)
+         CGLDestroyContext(ctx->cgl_context);
+-#else
++#elif !TARGET_OS_MACCATALYST
+     if (ctx->eagl_context)
+         [ctx->eagl_context release];
+ #endif
+diff --git a/modules/video_output/Makefile.am b/modules/video_output/Makefile.am
+index 4488d6b..203a0ec 100644
+--- a/modules/video_output/Makefile.am
++++ b/modules/video_output/Makefile.am
+@@ -57,10 +57,12 @@ vout_PLUGINS += libglinterop_cvpx_plugin.la
+ libglinterop_cvpx_plugin_la_LDFLAGS += -Wl,-framework,OpenGL
+ endif
+ if HAVE_IOS_OR_TVOS
++if HAVE_GLES2
+ vout_PLUGINS += libglinterop_cvpx_plugin.la
+ libglinterop_cvpx_plugin_la_CPPFLAGS += -DUSE_OPENGL_ES2
+ libglinterop_cvpx_plugin_la_LDFLAGS += -Wl,-framework,OpenGLES
+ endif
++endif
+ 
+ if HAVE_OSX
+ libwindow_macosx_plugin_la_SOURCES = video_output/window_macosx.m
+@@ -139,17 +141,19 @@ libcvpx_gl_plugin_la_LDFLAGS += -Wl,-framework,OpenGL
+ libcvpx_gl_plugin_la_LIBADD += libvlc_opengl.la
+ endif
+ if HAVE_IOS_OR_TVOS
++if HAVE_GLES2
+ vout_PLUGINS += libcvpx_gl_plugin.la
+ libcvpx_gl_plugin_la_CPPFLAGS += -DUSE_OPENGL_ES2
+ libcvpx_gl_plugin_la_LDFLAGS += -Wl,-framework,OpenGLES
+ libcvpx_gl_plugin_la_LIBADD += libvlc_opengles.la
+ endif
++endif
+ 
+ if HAVE_IOS_OR_TVOS
+-vout_PLUGINS += \
+-	libvout_ios_plugin.la \
+-	libuiview_window_plugin.la \
+-	libcaeagl_ios_plugin.la
++vout_PLUGINS += libuiview_window_plugin.la
++if HAVE_GLES2
++vout_PLUGINS += libvout_ios_plugin.la libcaeagl_ios_plugin.la
++endif
+ endif
+ if HAVE_XROS
+ vout_PLUGINS += libuiview_window_plugin.la
+diff --git a/modules/video_output/apple/VLCSampleBufferDisplay.m b/modules/video_output/apple/VLCSampleBufferDisplay.m
+index c59e87b..113f1f7 100644
+--- a/modules/video_output/apple/VLCSampleBufferDisplay.m
++++ b/modules/video_output/apple/VLCSampleBufferDisplay.m
+@@ -139,7 +139,7 @@ - (CVPixelBufferRef)provideFromBuffer:(CVPixelBufferRef)pixelBuffer
+             kCVPixelBufferMetalCompatibilityKey,
+ #if TARGET_OS_OSX
+             kCVPixelBufferOpenGLCompatibilityKey,
+-#elif !defined(TARGET_OS_VISION) || !TARGET_OS_VISION
++#elif !TARGET_OS_MACCATALYST && (!defined(TARGET_OS_VISION) || !TARGET_OS_VISION)
+             kCVPixelBufferOpenGLESCompatibilityKey,
+ #endif
+         };
+@@ -150,7 +150,7 @@ - (CVPixelBufferRef)provideFromBuffer:(CVPixelBufferRef)pixelBuffer
+             (__bridge CFNumberRef)(@(dstHeight)),
+             (__bridge CFDictionaryRef)@{},
+             kCFBooleanTrue,
+-#if !defined(TARGET_OS_VISION) || !TARGET_OS_VISION
++#if !TARGET_OS_MACCATALYST && (!defined(TARGET_OS_VISION) || !TARGET_OS_VISION)
+             kCFBooleanTrue
+ #endif
+         };
