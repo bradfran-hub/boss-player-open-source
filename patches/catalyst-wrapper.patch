@@ -1,0 +1,30 @@
+diff --git a/Sources/Core/VLCLibrary.m b/Sources/Core/VLCLibrary.m
+index 4abc14f..fe779a4 100644
+--- a/Sources/Core/VLCLibrary.m
++++ b/Sources/Core/VLCLibrary.m
+@@ -32,7 +32,15 @@
+ 
+ /* VLC features different module lists per platform but also per architecture
+  * so there is not a single slice with the same modules as the other */
+-#if TARGET_OS_TV
++#if TARGET_OS_MACCATALYST
++# if defined(__aarch64__) || defined(__arm64__)
++#  include "vlc-plugins-maccatalyst-device-arm64.h"
++# elif defined(__x86_64__)
++#  include "vlc-plugins-maccatalyst-device-x86_64.h"
++# else
++#  error Unsupported Catalyst architecture
++# endif
++#elif TARGET_OS_TV
+ 
+ #if TARGET_OS_SIMULATOR
+ #if __aarch64__
+@@ -45,7 +53,7 @@
+ #endif
+ #endif
+ 
+-#if TARGET_OS_IOS
++#if TARGET_OS_IOS && !TARGET_OS_MACCATALYST
+ #if TARGET_OS_SIMULATOR
+ #if __x86_64__
+ # include "vlc-plugins-iphone-simulator-x86_64.h"
