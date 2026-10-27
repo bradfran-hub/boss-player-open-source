@@ -1,0 +1,61 @@
+{
+  "publication": "sources-2026-10-28",
+  "assets": [
+    {
+      "file": "boss-ffmpeg-upstream-and-patches-v4.tar.gz",
+      "bytes": 16514455,
+      "sha256": "7ebead9796de3ea3b7b665e53b0df33170156e4352ddc8d1c30f2358f583355e",
+      "fileCount": 32,
+      "fileManifest": "SOURCE-FILES.json"
+    },
+    {
+      "file": "boss-ffmpeg-current-source-20261028.tar.gz",
+      "bytes": 20479663,
+      "sha256": "04d4a1eb9c782976364a8c130fbef582be70841882382462a2c31b25afe18c2e",
+      "fileCount": 9917,
+      "fileManifest": "SOURCE-FILES.json"
+    },
+    {
+      "file": "boss-mobile-vlc-source-20261028.tar.gz",
+      "bytes": 44216833,
+      "sha256": "e40fa4ac3ab4c8eb733c615454c53b19d5c47f57c04be3b5ded8630650660f76",
+      "fileCount": 5675,
+      "fileManifest": "SOURCE-FILES.json"
+    },
+    {
+      "file": "boss-mobile-wrapper-source-20261028.tar.gz",
+      "bytes": 1796196,
+      "sha256": "ae3a68ba5173a25f67c65a60726defc0128e5a50601a56f85dc4208fae74d4b7",
+      "fileCount": 727,
+      "fileManifest": "SOURCE-FILES.json"
+    },
+    {
+      "file": "boss-catalyst-vlc-source-20261028.tar.gz",
+      "bytes": 44217817,
+      "sha256": "6072c044eb0cdff681aa33114f36d3679e194a3bf7c6b91f4f237bee6838ff0c",
+      "fileCount": 5675,
+      "fileManifest": "SOURCE-FILES.json"
+    },
+    {
+      "file": "boss-catalyst-wrapper-source-20261028.tar.gz",
+      "bytes": 1796309,
+      "sha256": "e613dd10e013b1f74a80354a2433a98374092bd3d23e740d2a377b1af384642e",
+      "fileCount": 727,
+      "fileManifest": "SOURCE-FILES.json"
+    },
+    {
+      "file": "boss-vlc-contrib-source-cache-20261028.tar",
+      "bytes": 558151680,
+      "sha256": "2e1d8f8c3fbe9b69114e11e0971f23137940720167039821a5bc3300e74c15a1",
+      "fileCount": 67,
+      "fileManifest": "SOURCE-FILES.json"
+    },
+    {
+      "file": "boss-additional-dependency-materials-20261028.tar.gz",
+      "bytes": 4433421,
+      "sha256": "6ee5b7d5ca56d7b2f79fb3af13cadf47542e1a8b870dbdff9849654376fe6ea1",
+      "fileCount": 1194,
+      "fileManifest": "SOURCE-FILES.json"
+    }
+  ]
+}
