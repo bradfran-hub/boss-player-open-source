@@ -1,0 +1,7 @@
+.DS_Store
+*.xcarchive/
+*.app/
+*.dSYM/
+DerivedData/
+release-assets/
+__pycache__/
