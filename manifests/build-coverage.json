@@ -1,0 +1,34 @@
+{
+  "builds": [
+    {
+      "version": "2.101",
+      "build": "1294",
+      "platform": "tvOS",
+      "mediaInputHashes": {
+        "BOSSRemux.xcframework/tvos-arm64/BOSSRemux": "e5b95d57ff1b3bac7c15d5f648b9035b349a2aaf7fce15a5b66ade439ad78d5b",
+        "BOSSFELDecode.xcframework/tvos-arm64/BOSSFELDecode": "2bbfe30b426edff6dec1307a3f457367be26630133d4055207e7985aa9b307cf"
+      },
+      "fullApplicationRelinkVerified": false,
+      "sourceToFinalBinaryVerification": "pending"
+    },
+    {
+      "version": "2.101",
+      "build": "1301",
+      "platform": "iOS/iPadOS",
+      "mediaInputHashes": {
+        "BOSSRemux.xcframework/ios-arm64/BOSSRemux": "09d064fe27d36718fe13e18a5715f2b90c0e9fb749b850e5164f6d8175a29dd8",
+        "BOSSFELDecode.xcframework/ios-arm64/BOSSFELDecode": "e66c8e6a41f2d0c962b973b17b8cdc0e46a79b0f8154933629b7480b402912dc"
+      },
+      "fullApplicationRelinkVerified": false,
+      "sourceToFinalBinaryVerification": "pending"
+    },
+    {
+      "version": "2.101",
+      "build": "1302",
+      "platform": "macOS Catalyst",
+      "mediaInputHashes": {},
+      "fullApplicationRelinkVerified": false,
+      "sourceToFinalBinaryVerification": "pending"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "snapshots": [
+    {
+      "variant": "mobile",
+      "component": "VLC",
+      "upstreamCommit": "a0c13fc0c1557eea850d9bcac3b07798a38454b0",
+      "patch": "patches/mobile-vlc.patch",
+      "patchSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "snapshotIncludesPatch": true,
+      "trackedSourceFiles": 5675
+    },
+    {
+      "variant": "mobile",
+      "component": "Wrapper",
+      "upstreamCommit": "4597608200216a4393fb1b5d2e7eaade0b774187",
+      "patch": "patches/mobile-wrapper.patch",
+      "patchSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "snapshotIncludesPatch": true,
+      "trackedSourceFiles": 727
+    },
+    {
+      "variant": "catalyst",
+      "component": "VLC",
+      "upstreamCommit": "a0c13fc0c1557eea850d9bcac3b07798a38454b0",
+      "patch": "patches/catalyst-vlc.patch",
+      "patchSHA256": "af731dca9c5b30956a7a77bc8a624aa68710d6cef7df2c356ee6e2faca801211",
+      "snapshotIncludesPatch": true,
+      "trackedSourceFiles": 5675
+    },
+    {
+      "variant": "catalyst",
+      "component": "Wrapper",
+      "upstreamCommit": "4597608200216a4393fb1b5d2e7eaade0b774187",
+      "patch": "patches/catalyst-wrapper.patch",
+      "patchSHA256": "167e52b9db244923c800fcf7c0196883b0cb8db8442f56c9a9097e6035931633",
+      "snapshotIncludesPatch": true,
+      "trackedSourceFiles": 727
+    }
+  ]
+}
