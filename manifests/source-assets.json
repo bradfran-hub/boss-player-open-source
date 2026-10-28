@@ -75,6 +75,13 @@
       "file": "boss-third-party-notices-current-20261028-r3.zip",
       "bytes": 341945,
       "sha256": "884775821f1e89ab17b8be88ab2c474b6d66cbc1a18fdec196ecd19979e9c865"
+    },
+    {
+      "file": "boss-disc-catalyst-rebuild-recipe-20261028.zip",
+      "bytes": 540130,
+      "sha256": "2e03da3ef30cdc3001a8a796f21c509a05ad6c5faac4006fc9ceea05f12d92a9",
+      "kind": "catalyst-disc-dependency-rebuild-recipe",
+      "verification": "Extracted package rebuild succeeded for arm64 and x86_64; all 118 dependency objects byte-identical to retained Mac build. Excludes BOSS wrapper, app and mobile use."
     }
   ]
 }
