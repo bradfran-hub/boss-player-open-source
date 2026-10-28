@@ -70,6 +70,11 @@
       "sha256": "27efc92248f520d9b4155bf7b7c16b17fda989a115d900307c06d711b9e02286",
       "kind": "current-ffmpeg-rebuild-recipe",
       "verification": "Uploaded release asset size and SHA-256 digest checked against GitHub metadata"
+    },
+    {
+      "file": "boss-third-party-notices-current-20261028-r3.zip",
+      "bytes": 341945,
+      "sha256": "884775821f1e89ab17b8be88ab2c474b6d66cbc1a18fdec196ecd19979e9c865"
     }
   ]
 }
