@@ -82,6 +82,20 @@
       "sha256": "2e03da3ef30cdc3001a8a796f21c509a05ad6c5faac4006fc9ceea05f12d92a9",
       "kind": "catalyst-disc-dependency-rebuild-recipe",
       "verification": "Extracted package rebuild succeeded for arm64 and x86_64; all 118 dependency objects byte-identical to retained Mac build. Excludes BOSS wrapper, app and mobile use."
+    },
+    {
+      "file": "boss-disc-mobile-rebuild-recipe-20261028.zip",
+      "bytes": 521186,
+      "sha256": "884e613aa083a924435772250ef678b1e5ccf1e889f509c2a35114b31879a736",
+      "kind": "mobile-disc-dependency-rebuild-recipe",
+      "verification": "Both extracted mobile routes rebuilt; portable outputs preserve code sections, while original source-string prefix reproduces all 118 retained objects. Excludes private wrapper and final app use."
+    },
+    {
+      "file": "boss-third-party-notices-current-20261028-r4.zip",
+      "bytes": 360597,
+      "sha256": "1a1a341f68d39f1b2ee1f9c3c2bf86bf941d1a3fc4e598043655a9d506a53c7d",
+      "kind": "current-third-party-notices-r4",
+      "verification": "Eight notice resources with per-entry checksums and platform scope; includes Rust Standard Library runtime notice supplement. Isolated iOS/tvOS inclusion verified without executable changes; final distribution separate."
     }
   ]
 }
