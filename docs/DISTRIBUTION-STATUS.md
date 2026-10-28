@@ -1,16 +1,17 @@
 # Distribution status — 28 October 2026
 
-This is a source-material publication, not a legal-compliance certification.
+This is a source-material publication, not a legal-compliance certification. The current FFmpeg recipe demonstrates library rebuilds, not final app correspondence or recipient installation. Existing tested playback code has not been replaced by this licensing publication.
 
 ## Supplied here
 
 - Complete historical FFmpeg upstream source, selected patches and FFmpeg-only build recipe with a dependency-subset manifest.
-- Later FFmpeg source snapshot and mobile audio patch.
+- Later FFmpeg source snapshot and mobile audio patch, plus an offline rebuild recipe with successful iOS arm64, tvOS arm64 and Catalyst arm64/x86_64 library builds.
 - Retained mobile and Catalyst VLC/VLCKit source snapshots and source changes.
 - Original VLC contrib dependency source-cache archives.
 - Licence texts, recorded configure commands, source-file hashes and asset checksums.
 - A build coverage manifest that keeps unverified items explicit.
 - Additional available dependency sources/notices and a both-edition dependency checklist.
+- Seven offline notice documents from 194 retained source records, with document hashes and provenance; the original SwiftDraw zlib notice is also retained in the repository.
 
 ## Remaining work before declaring the complete shipped app covered
 
