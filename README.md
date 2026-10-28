@@ -19,7 +19,6 @@ Download the source archives from [Sources — 28 October 2026](https://github.c
 | `boss-dependency-notices-20261028.zip` | Seven offline notice documents collected from 194 retained source records, with hashes and provenance. |
 | `boss-third-party-notices-current-20261028-r3.zip` | Current eight notice resources, corrected platform scopes and the original contributor/network notice supplements. Retains the earlier notice snapshot separately. |
 | `boss-ffmpeg-current-rebuild-recipe-20261028.zip` | Offline rebuild recipe for the current FFmpeg snapshot, verified for iOS arm64, tvOS arm64 and Catalyst arm64/x86_64. |
-
 | `boss-disc-catalyst-rebuild-recipe-20261028.zip` | Offline Catalyst libbluray/libudfread rebuild recipe and dependency inputs. All 118 fresh dependency objects match the retained Mac build byte-for-byte. |
 
 Check downloads with [SHA256SUMS](SHA256SUMS). The eight source/material archives include `SOURCE-FILES.json`. The notice ZIPs and rebuild ZIPs carry their own manifests and verification records. [Source asset metadata](manifests/source-assets.json) records archive sizes and hashes.
