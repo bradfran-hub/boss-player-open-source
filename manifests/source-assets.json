@@ -56,6 +56,20 @@
       "sha256": "6ee5b7d5ca56d7b2f79fb3af13cadf47542e1a8b870dbdff9849654376fe6ea1",
       "fileCount": 1194,
       "fileManifest": "SOURCE-FILES.json"
+    },
+    {
+      "file": "boss-dependency-notices-20261028.zip",
+      "bytes": 346828,
+      "sha256": "d417399628418ffa863f3f67bf31e7f983dca3606c8fb05804de7a0709f7a03a",
+      "kind": "offline-notices",
+      "verification": "Uploaded release asset size and SHA-256 digest checked against GitHub metadata"
+    },
+    {
+      "file": "boss-ffmpeg-current-rebuild-recipe-20261028.zip",
+      "bytes": 20260,
+      "sha256": "27efc92248f520d9b4155bf7b7c16b17fda989a115d900307c06d711b9e02286",
+      "kind": "current-ffmpeg-rebuild-recipe",
+      "verification": "Uploaded release asset size and SHA-256 digest checked against GitHub metadata"
     }
   ]
 }
