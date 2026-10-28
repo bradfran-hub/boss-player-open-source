@@ -24,3 +24,5 @@ The versioned source release also contains `boss-dependency-notices-20261028.zip
 SwiftDraw 0.29.0's [original zlib notice](SwiftDraw-zlib.txt) is retained from revision `82699f4bdf2f075793cfa0d392eb27c59b41a3fe`. [Upstream original](https://github.com/swhitty/SwiftDraw/blob/82699f4bdf2f075793cfa0d392eb27c59b41a3fe/LICENSE.txt).
 
 The current FFmpeg rebuild ZIP retains a separate full build-script licence and verification receipts. Required final app-bundle delivery, complete linked-membership review and unresolved rights remain separate work. These materials do not grant a proprietary exception to third-party GPL/LGPL code.
+
+The newer `boss-third-party-notices-current-20261028-r3.zip` retains eight current notice resources and their platform scopes, plus original nlohmann/json contributor, fmt, network/RPC and RSA-MD4 notice supplements. It does not replace the earlier archived notice snapshot or establish that a newly distributed app includes these updates.
